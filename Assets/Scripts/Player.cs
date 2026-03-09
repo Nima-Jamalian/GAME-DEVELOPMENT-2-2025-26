@@ -15,6 +15,10 @@ public class Player : MonoBehaviour
     [SerializeField] private float mouseSensitivity = 3f;
     [SerializeField] private GameObject FPSCamera;
     private float xRotation = 0f;
+
+    //Items
+    [SerializeField] private int healthPackCount = 0;
+    [SerializeField] private int ammoPackCount = 0;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -29,6 +33,34 @@ public class Player : MonoBehaviour
     {
         Movement();
         MouseRotation();
+        FireRayCast();
+    }
+
+    private void FireRayCast()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = new Ray(FPSCamera.transform.position, FPSCamera.transform.forward);
+            Debug.DrawRay(FPSCamera.transform.position, FPSCamera.transform.forward * 10, Color.red);
+
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            {
+                if (hit.transform.CompareTag("Push Object"))
+                {
+                    Destroy(hit.transform.gameObject);
+                    // Debug.Log(hit.distance);
+                } else if(hit.transform.CompareTag("Health Pack") && hit.distance < 3)
+                {
+                    healthPackCount++;
+                    Destroy(hit.transform.gameObject);
+                } else if(hit.transform.CompareTag("Ammo Pack") && hit.distance < 3)
+                {
+                    ammoPackCount++;
+                    Destroy(hit.transform.gameObject);
+                }
+            }
+        }
     }
 
     private void Movement()
@@ -38,20 +70,20 @@ public class Player : MonoBehaviour
         float verticalInput = Input.GetAxisRaw("Vertical");
 
         // Direction
-        Vector3 direction = new Vector3(horizontalInput,0,verticalInput);
+        Vector3 direction = new Vector3(horizontalInput, 0, verticalInput);
 
         if (characterController.isGrounded)
         {
             // Reset yDirection
             yDirection = -0.5f;
-            
+
             // Jump
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                yDirection = jumpPower; 
+                yDirection = jumpPower;
             }
         }
-        
+
         // Gravity
         yDirection += gravity * Time.deltaTime;
 
@@ -70,11 +102,11 @@ public class Player : MonoBehaviour
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
-        
+
         // Up and Down Rotation
         xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation,-90f,90f);
-        FPSCamera.transform.localRotation = Quaternion.Euler(xRotation,0f,0f);
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        FPSCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         // Left and Right Rotation
         transform.Rotate(Vector3.up, mouseX);
@@ -82,7 +114,7 @@ public class Player : MonoBehaviour
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if(hit.gameObject.CompareTag("Push Object"))
+        if (hit.gameObject.CompareTag("Push Object"))
         {
             Rigidbody rb = hit.collider.attachedRigidbody;
 
