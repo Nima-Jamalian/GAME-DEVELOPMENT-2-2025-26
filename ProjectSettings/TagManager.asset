@@ -4,10 +4,9 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Object
-  - Push Object
-  - Ammo Pack
-  - Health Pack
+  - Ball
+  - Green Cube
+  - Yellow Cube
   layers:
   - Default
   - TransparentFX

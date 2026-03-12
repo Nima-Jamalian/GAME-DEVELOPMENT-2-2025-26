@@ -16,9 +16,11 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject FPSCamera;
     private float xRotation = 0f;
 
-    //Items
-    [SerializeField] private int healthPackCount = 0;
-    [SerializeField] private int ammoPackCount = 0;
+    [Header("Items")]
+    [SerializeField] private int ballCount = 0;
+    [SerializeField] private int greenCubeCount = 0;
+    [SerializeField] private int yellowCubeCount = 0;
+    [SerializeField] UIManager uIManager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -46,17 +48,21 @@ public class Player : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, Mathf.Infinity))
             {
-                if (hit.transform.CompareTag("Push Object"))
+                if (hit.transform.CompareTag("Ball"))
                 {
+                    ballCount++;
+                    uIManager.UpdateBallScoreUI(ballCount);
                     Destroy(hit.transform.gameObject);
                     // Debug.Log(hit.distance);
-                } else if(hit.transform.CompareTag("Health Pack") && hit.distance < 3)
+                } else if(hit.transform.CompareTag("Green Cube") && hit.distance < 3)
                 {
-                    healthPackCount++;
+                    greenCubeCount++;
+                    uIManager.UpdateGreenCubeScoreUI(greenCubeCount);
                     Destroy(hit.transform.gameObject);
-                } else if(hit.transform.CompareTag("Ammo Pack") && hit.distance < 3)
+                } else if(hit.transform.CompareTag("Yellow Cube") && hit.distance < 3)
                 {
-                    ammoPackCount++;
+                    yellowCubeCount++;
+                    uIManager.UpdateYellowCubeScoreUI(yellowCubeCount);
                     Destroy(hit.transform.gameObject);
                 }
             }
@@ -114,7 +120,7 @@ public class Player : MonoBehaviour
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (hit.gameObject.CompareTag("Push Object"))
+        if (hit.gameObject.CompareTag("Ball"))
         {
             Rigidbody rb = hit.collider.attachedRigidbody;
 
